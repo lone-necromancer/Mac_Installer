@@ -1,0 +1,16 @@
+on:
+  pull_request:
+    branches:   
+      - main
+      - develop
+      
+jobs:
+  ci-test-checklist:
+    name: normal CI checks
+    runs-on: macos-latest
+
+    steps: 
+      - name: happy flow
+        run: ./brew_installer.sh
+        
+ 
