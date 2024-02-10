@@ -11,6 +11,7 @@ jobs:
 
     steps: 
       - name: happy flow
+        uses: actions/checkout@v4
         run: ./brew_installer.sh
         
  
