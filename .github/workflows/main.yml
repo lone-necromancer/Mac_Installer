@@ -10,8 +10,10 @@ jobs:
     runs-on: macos-latest
 
     steps: 
+      - name: checkout
+      - uses: actions/checkout@v4
+      
       - name: happy flow
-        uses: actions/checkout@v4
         run: ./brew_installer.sh
         
  
