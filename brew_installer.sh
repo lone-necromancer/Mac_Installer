@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -16,7 +16,44 @@ else
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# Install your desired program using Homebrew
+# Install mas
+if command -v mas &> /dev/null; then
+    echo -e "${CYAN}mas is already installed."
+else
+    # Install mas using Homebrew
+    echo -e "${GREEN}Installing mas..."
+    brew install mas
+fi
+
+# Install Xcode command line tools
+if command -v xcode-select &> /dev/null; then
+    echo -e "${CYAN}xcode-select is already installed."
+else
+    # Install xcode-select using Homebrew
+    echo -e "${GREEN}Installing xcode-select..."
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    PROD=$(softwareupdate -l |
+            grep "\*.*Command Line" |
+            head -n 1 | awk -F"*" '{print $2}' |
+            sed -e 's/^ *//' |
+            tr -d '\n')
+    softwareupdate -i "$PROD" --verbose
+    # Wait for Xcode command line tools installation to complete
+    echo "${CYAN}Waiting for Xcode command line tools installation to complete..."
+    until xcode-select -p &>/dev/null; do
+        sleep 5
+    done
+fi
+
+# Install Xcode
+if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
+    echo "$Xcode is already installed."
+else
+    # Download and install Xcode from the App Store (you may need to sign in to the App Store)
+    echo "${CYAN}Downloading and installing Xcode..."
+    (mas install 497799835) &  # This is the App Store ID for Xcode
+    XCODE_INSTALL_PID=$!
+fi
 
 # Check if Python is installed and its version is less than 3.x.x
 if command -v python3 &> /dev/null && [[ $(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2) > 3.0 ]]; then
@@ -25,15 +62,6 @@ else
     # Install Python 3 using Homebrew
     echo -e "${GREEN}Installing Python 3..."
     brew install python3
-fi
-
-# Install mas
-if command -v mas &> /dev/null; then
-    echo -e "${CYAN}mas is already installed."
-else
-    # Install Python 3 using Homebrew
-    echo -e "${GREEN}Installing mas..."
-    brew install mas
 fi
 
 # install Warp
@@ -72,30 +100,17 @@ else
     brew install fastlane
 fi
 
-# Install Xcode
-if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
-    echo "$Xcode is already installed."
+#Install starship
+if command -v starship &> /dev/null; then
+    echo -e "${CYAN}starship is already installed."
 else
-    # Install Xcode command line tools
-        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    PROD=$(softwareupdate -l |
-            grep "\*.*Command Line" |
-            head -n 1 | awk -F"*" '{print $2}' |
-            sed -e 's/^ *//' |
-            tr -d '\n')
-    softwareupdate -i "$PROD" --verbose
-
-
-    # Wait for Xcode command line tools installation to complete
-    echo "${CYAN}Waiting for Xcode command line tools installation to complete..."
-    until xcode-select -p &>/dev/null; do
-        sleep 5
-    done
-
-    # Download and install Xcode from the App Store (you may need to sign in to the App Store)
-    echo "${CYAN}Downloading and installing Xcode..."
-    (mas install 497799835) &  # This is the App Store ID for Xcode
-    XCODE_INSTALL_PID=$!
+    # Install Python 3 using Homebrew
+    echo -e "${GREEN}Installing starship..."
+    brew install starship
+    # Initialize starship when zsh is executed.
+    echo 'eval "$(starship init zsh)"' >> .zshrc
+    # Set a new font for the starship.
+    starship preset nerd-font-symbols -o ~/.config/starship.toml
 fi
 
 # Wait for processes to finish before finising the program
@@ -114,5 +129,6 @@ else
     echo "${RED}VSCode installation may not have completed successfully. Please install manually."
 fi
 
+echo ""
 echo -e "${GREEN}Finished installation successfully"
 exit 0
