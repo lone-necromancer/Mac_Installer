@@ -52,5 +52,35 @@ fi
 
 #Install Fastlane
 
+
+# Install Xcode
+if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
+    echo "$Xcode is already installed."
+else
+    # Install Xcode command line tools
+    sudo xcode-select --install && sudo xcodebuild -license accept
+
+
+    # Wait for Xcode command line tools installation to complete
+    echo "${CYAN}Waiting for Xcode command line tools installation to complete..."
+    until xcode-select -p &>/dev/null; do
+        sleep 5
+    done
+
+    # Download and install Xcode from the App Store (you may need to sign in to the App Store)
+    echo "${CYAN}Downloading and installing Xcode..."
+    (mas install 497799835) &  # This is the App Store ID for Xcode
+    XCODE_INSTALL_PID=$!
+fi
+
+# Wait for Xcode installation process to finish before finising the program
+wait XCODE_INSTALL_PID
+# Check if Xcode is now installed
+if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
+    echo "${GREEN}Xcode has been installed successfully."
+else
+    echo "${RED}Xcode installation may not have completed successfully. Please install manually."
+fi
+
 echo -e "${GREEN}Finished installation successfully"
 exit 0
