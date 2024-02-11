@@ -27,6 +27,15 @@ else
     brew install python3
 fi
 
+# Install mas
+if command -v mas &> /dev/null; then
+    echo -e "${CYAN}mas is already installed."
+else
+    # Install Python 3 using Homebrew
+    echo -e "${GREEN}Installing mas..."
+    brew install mas
+fi
+
 # install Warp
 if [ -e "$INSTALL_DIR/Warp.app" ]; then
     echo -e "${CYAN} Warp is already installed"
@@ -34,7 +43,6 @@ else
     echo -e "${GREEN} Warp is not installed, installing..."
     brew install --cask warp
 fi
-# Install Xcode
 
 # Install VSCode
 
