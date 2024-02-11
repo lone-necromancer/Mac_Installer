@@ -45,20 +45,45 @@ else
 fi
 
 # Install VSCode
+if [ -d "${INSTALL_DIR}/Visual Studio Code.app" ]; then
+    echo "${CYAN}VSCode is already installed."
+else
+    # Install VSCode using Homebrew
+    echo "${GREEN}Installing Visual Studio Code..."
+    brew install --cask visual-studio-code & 
+    VSCODE_INSTALL_PID=$!
+fi
 
 # Install Git
-
-# Install Jira
+if command -v git &> /dev/null; then
+    echo -e "${CYAN}git is already installed."
+else
+    # Install Python 3 using Homebrew
+    echo -e "${GREEN}Installing git..."
+    brew install git
+fi
 
 #Install Fastlane
-
+if command -v fastlane &> /dev/null; then
+    echo -e "${CYAN}fastlane is already installed."
+else
+    # Install Python 3 using Homebrew
+    echo -e "${GREEN}Installing fastlane..."
+    brew install fastlane
+fi
 
 # Install Xcode
 if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
     echo "$Xcode is already installed."
 else
     # Install Xcode command line tools
-    sudo xcode-select --install && sudo xcodebuild -license accept
+        touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    PROD=$(softwareupdate -l |
+            grep "\*.*Command Line" |
+            head -n 1 | awk -F"*" '{print $2}' |
+            sed -e 's/^ *//' |
+            tr -d '\n')
+    softwareupdate -i "$PROD" --verbose
 
 
     # Wait for Xcode command line tools installation to complete
@@ -73,13 +98,20 @@ else
     XCODE_INSTALL_PID=$!
 fi
 
-# Wait for Xcode installation process to finish before finising the program
-wait XCODE_INSTALL_PID
+# Wait for processes to finish before finising the program
+wait XCODE_INSTALL_PID && VSCODE_INSTALL_PID
 # Check if Xcode is now installed
 if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
     echo "${GREEN}Xcode has been installed successfully."
 else
     echo "${RED}Xcode installation may not have completed successfully. Please install manually."
+fi
+
+# Check if VSCode is now installed
+if [ -d "${INSTALL_DIR}/Visual Studio Code.app" ]; then
+    echo "${GREEN}VSCode has been installed successfully."
+else
+    echo "${RED}VSCode installation may not have completed successfully. Please install manually."
 fi
 
 echo -e "${GREEN}Finished installation successfully"
