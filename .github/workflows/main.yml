@@ -11,6 +11,6 @@ jobs:
 
     steps: 
       - name: happy flow
-        run: ./brew_installer.sh
+        run: ./brew_installer.sh -e
         
  

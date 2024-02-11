@@ -7,6 +7,26 @@ NC='\033[0m' # No Color
 
 INSTALL_DIR="/Applications"
 
+EXCLUDE_HEAVY_INSTALLATIONS='false'
+
+while getopts ':e' 'OPTKEY'; do
+    case ${OPTKEY} in
+        'e')
+            # Update the value of the option x flag we defined above
+            EXCLUDE_HEAVY_INSTALLATIONS='true'
+            ;;
+        ':')
+            echo "MISSING ARGUMENT for option -- ${OPTARG}" >&2
+            exit 1
+            ;;
+        *)
+            echo "UNIMPLEMENTED OPTION -- ${OPTKEY}" >&2
+            exit 1
+            ;;
+    esac
+done
+
+
 # Check if Homebrew is installed
 if command -v brew &> /dev/null; then
     echo -e "${CYAN}Homebrew is already installed."
@@ -47,10 +67,12 @@ fi
 
 # Install Xcode
 if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
-    echo "$Xcode is already installed."
+    echo "${CYAN}Xcode is already installed."
+elif [ EXCLUDE_HEAVY_INSTALLATIONS ]; then
+    echo "${RED}Skipping Xcode installation."
 else
     # Download and install Xcode from the App Store (you may need to sign in to the App Store)
-    echo "${CYAN}Downloading and installing Xcode..."
+    echo "${GREEN}Downloading and installing Xcode..."
     (mas install 497799835) &  # This is the App Store ID for Xcode
     XCODE_INSTALL_PID=$!
 fi
@@ -75,6 +97,8 @@ fi
 # Install VSCode
 if [ -d "${INSTALL_DIR}/Visual Studio Code.app" ]; then
     echo "${CYAN}VSCode is already installed."
+elif [ EXCLUDE_HEAVY_INSTALLATIONS ]; then
+    echo "${RED}Skipping Xcode installation."
 else
     # Install VSCode using Homebrew
     echo "${GREEN}Installing Visual Studio Code..."
@@ -114,7 +138,7 @@ else
 fi
 
 # Wait for processes to finish before finising the program
-wait XCODE_INSTALL_PID && VSCODE_INSTALL_PID
+wait $XCODE_INSTALL_PID && $VSCODE_INSTALL_PID
 # Check if Xcode is now installed
 if [ -d "${INSTALL_DIR}/Xcode.app" ]; then
     echo "${GREEN}Xcode has been installed successfully."
