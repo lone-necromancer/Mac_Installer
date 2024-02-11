@@ -5,6 +5,8 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+INSTALL_DIR="/Applications"
+
 # Check if Homebrew is installed
 if command -v brew &> /dev/null; then
     echo -e "${CYAN}Homebrew is already installed."
@@ -25,13 +27,13 @@ else
     brew install python3
 fi
 
-# Check if Warp is installed
-# if sudo command find /Applications -name "Warp.app" &> /dev/null; then
-#     echo -e "${CYAN} Warp is already installed"
-# else 
-#     echo -e "${GREEN} Warp is not installed, installing..."
-#     brew install --cask warp
-
+# install Warp
+if [ -e "$INSTALL_DIR/Warp.app" ]; then
+    echo -e "${CYAN} Warp is already installed"
+else 
+    echo -e "${GREEN} Warp is not installed, installing..."
+    brew install --cask warp
+fi
 # Install Xcode
 
 # Install VSCode
