@@ -1,3 +1,5 @@
+name: CI
+
 on:
   pull_request:
     branches:   
@@ -7,7 +9,7 @@ on:
 jobs:
   ci-test-checklist:
     name: normal CI checks
-    runs-on: macos-latest
+    runs-on: test_mac_runner
 
     steps: 
       - name: checkout
